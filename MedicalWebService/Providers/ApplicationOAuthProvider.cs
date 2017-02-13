@@ -10,28 +10,26 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using MedicalWebService.Models;
+using MedicalWebService.Repositories.Interfaces;
 
 namespace MedicalWebService.Providers
 {
     public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
     {
-        private readonly string _publicClientId;
 
-        public ApplicationOAuthProvider(string publicClientId)
+        private IUnitOfWork _unitOfWork;
+        private ApplicationUserManager _userManager;
+
+        public ApplicationOAuthProvider(IUnitOfWork unitOfWork, ApplicationUserManager userManager)
         {
-            if (publicClientId == null)
-            {
-                throw new ArgumentNullException("publicClientId");
-            }
-
-            _publicClientId = publicClientId;
+            this._unitOfWork = unitOfWork;
+            this._userManager = userManager;
         }
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
-        {
-            var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
+        { 
 
-            ApplicationUser user = await userManager.FindAsync(context.UserName, context.Password);
+            ApplicationUser user = await _userManager.FindAsync(context.UserName, context.Password);
 
             if (user == null)
             {
@@ -39,12 +37,14 @@ namespace MedicalWebService.Providers
                 return;
             }
 
-            ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
+            ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(_userManager,
                OAuthDefaults.AuthenticationType);
-            ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
+            ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(_userManager,
                 CookieAuthenticationDefaults.AuthenticationType);
 
-            AuthenticationProperties properties = CreateProperties(user.UserName);
+            IList<string> roles = await _userManager.GetRolesAsync(user.Id);
+
+            AuthenticationProperties properties = CreateProperties(user.UserName, roles.ElementAt(0).ToString());
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
@@ -63,7 +63,13 @@ namespace MedicalWebService.Providers
         public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
             // Resource owner password credentials does not provide a client ID.
-            if (context.ClientId == null)
+
+            string clientId = "";
+            string clientSecret = "";
+            context.TryGetBasicCredentials(out clientId, out clientSecret);
+            Client client = this._unitOfWork.ClientRepository.Get(filter: a=>a.ClientName == clientId).FirstOrDefault();
+
+            if (client != null && client.ClientSecret==clientSecret)
             {
                 context.Validated();
             }
@@ -73,24 +79,17 @@ namespace MedicalWebService.Providers
 
         public override Task ValidateClientRedirectUri(OAuthValidateClientRedirectUriContext context)
         {
-            if (context.ClientId == _publicClientId)
-            {
-                Uri expectedRootUri = new Uri(context.Request.Uri, "/");
-
-                if (expectedRootUri.AbsoluteUri == context.RedirectUri)
-                {
-                    context.Validated();
-                }
-            }
-
+            
+            context.Validated();
             return Task.FromResult<object>(null);
         }
 
-        public static AuthenticationProperties CreateProperties(string userName)
+        public static AuthenticationProperties CreateProperties(string userName, string role)
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
-                { "userName", userName }
+                { "userName", userName },
+                { "role",role}
             };
             return new AuthenticationProperties(data);
         }

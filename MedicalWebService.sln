@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicalWebService", "Medica
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicalWebService.Tests", "MedicalWebService.Tests\MedicalWebService.Tests.csproj", "{1B1F3815-FDA3-4612-BC98-F9886E0E6CAD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicalFrontend", "MedicalFrontend\MedicalFrontend.csproj", "{749C31B4-F5C1-4CD1-BA35-07CB58932F27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicalFrontend.Tests", "MedicalFrontend.Tests\MedicalFrontend.Tests.csproj", "{8AF3A631-E0E9-4A6C-B0BF-72D685BF6536}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{1B1F3815-FDA3-4612-BC98-F9886E0E6CAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B1F3815-FDA3-4612-BC98-F9886E0E6CAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B1F3815-FDA3-4612-BC98-F9886E0E6CAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{749C31B4-F5C1-4CD1-BA35-07CB58932F27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{749C31B4-F5C1-4CD1-BA35-07CB58932F27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{749C31B4-F5C1-4CD1-BA35-07CB58932F27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{749C31B4-F5C1-4CD1-BA35-07CB58932F27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AF3A631-E0E9-4A6C-B0BF-72D685BF6536}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AF3A631-E0E9-4A6C-B0BF-72D685BF6536}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AF3A631-E0E9-4A6C-B0BF-72D685BF6536}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AF3A631-E0E9-4A6C-B0BF-72D685BF6536}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
